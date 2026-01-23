@@ -1,0 +1,51 @@
+{
+    "name": "TotalRecallInput",
+    "maps": [
+        {
+            "name": "CharacterInteraction",
+            "id": "03245367-f803-427b-9356-90f3c40c3272",
+            "actions": [
+                {
+                    "name": "LeftClick",
+                    "type": "PassThrough",
+                    "id": "771ffc37-dc36-4bf9-9ae0-360a8cb88742",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=1)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "679e4ed0-f3c2-4d25-a10c-5e5802afd2c6",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PC",
+                    "action": "LeftClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "PC",
+            "bindingGroup": "PC",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
