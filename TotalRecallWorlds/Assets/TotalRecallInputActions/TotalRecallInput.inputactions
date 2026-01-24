@@ -2,7 +2,7 @@
     "name": "TotalRecallInput",
     "maps": [
         {
-            "name": "CharacterInteraction",
+            "name": "SceneInteraction",
             "id": "03245367-f803-427b-9356-90f3c40c3272",
             "actions": [
                 {

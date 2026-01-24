@@ -5,7 +5,7 @@ using ZukiniFun.TotalAgentCore;
 namespace ZukiniFun.TotalAgentHelpers
 {
     /// <summary>
-    /// Generated Helper.
+    /// Generated helper that will fit the agents capsule collider.
     /// </summary>
     [RequireComponent(typeof(CapsuleCollider))]
     public class AutoCapsuleFromRenderer : MonoBehaviour
@@ -19,7 +19,7 @@ namespace ZukiniFun.TotalAgentHelpers
         }
 
         /// <summary>
-        /// 
+        /// Public interface.
         /// </summary>
         public void FitCollider()
         {
