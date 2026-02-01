@@ -3,13 +3,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using ZukiniFun.TotalAgentHelpers;
+using ZukiniFun.TotalInputCore;
 
 namespace ZukiniFun.TotalAgentCore
 {
     /// <summary>
     /// 
     /// </summary>
-    public class SelectableAgent : MonoBehaviour, ISelectableAgentLocomotion
+    public abstract class SelectableAgent : MonoBehaviour, ISelectableAgentLocomotion, IHoverableTotalRecall
     {
         /// <summary>
         /// 
@@ -58,6 +59,11 @@ namespace ZukiniFun.TotalAgentCore
         /// 
         /// </summary>
         public UnityAction<LocomotionState> AgentLocomotionStateChanged;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private Renderer[] _agentRenderers;
 
         #region MonoBehavior
 
@@ -126,6 +132,10 @@ namespace ZukiniFun.TotalAgentCore
         protected virtual void StartOverride()
         {
             LocomotionState = LocomotionState.Idle;
+
+            _agentRenderers = GetComponentsInChildren<Renderer>();
+
+            OnHoverExit();
         }
 
         /// <summary>
@@ -181,6 +191,52 @@ namespace ZukiniFun.TotalAgentCore
         public virtual void GoToDestination(Vector3 userDestinationInput)
         {
             ChangeLocomotionState(LocomotionState.GoingTo);
+        }
+
+        #endregion
+
+        #region IHoverableTotalRecall Implementation
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void OnHoverEnter()
+        {
+            if (SelectionState.Equals(SelectionState.Selected))
+            {
+                return;
+            }
+
+            if (_agentRenderers == null || _agentRenderers.Length == 0)
+            {
+                return;
+            }
+
+            foreach (var item in _agentRenderers)
+            {
+                item.gameObject.layer = LayerMask.NameToLayer("TotalRecallOutline");
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void OnHoverExit()
+        {
+            if (SelectionState.Equals(SelectionState.Selected))
+            {
+                return;
+            }
+
+            if (_agentRenderers == null || _agentRenderers.Length == 0)
+            {
+                return;
+            }
+
+            foreach (var item in _agentRenderers)
+            {
+                item.gameObject.layer = LayerMask.NameToLayer("TotalRecallHoverable");
+            }
         }
 
         #endregion
