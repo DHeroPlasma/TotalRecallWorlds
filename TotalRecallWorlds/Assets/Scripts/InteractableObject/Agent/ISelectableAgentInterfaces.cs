@@ -5,15 +5,6 @@ namespace ZukiniFun.TotalAgentCore
     /// <summary>
     /// 
     /// </summary>
-    public enum SelectionState
-    {
-        Selected = 0,
-        Unselected = 1
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public enum LocomotionState
     {
         Idle = 0,

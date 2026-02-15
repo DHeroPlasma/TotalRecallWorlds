@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using ZukiniFun.TotalAgentCore;
 
 namespace ZukiniFun.TotalInputCore
 {
@@ -11,6 +13,15 @@ namespace ZukiniFun.TotalInputCore
     /// </summary>
     public class InputManagerTotalRecall : MonoBehaviour
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool AllowMultiSelectionAgents
+        {
+            get; 
+            private set; 
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -39,19 +50,32 @@ namespace ZukiniFun.TotalInputCore
         /// <summary>
         /// 
         /// </summary>
+        private HashSet<SelectableAgent> _selectableAgents;
+
+        /// <summary>
+        /// 
+        /// </summary>
         [SerializeField]
         private InputActionReference LeftClickActionReference;
         private InputAction _leftClickAction;
         public static UnityAction LeftClickInScenePressed;
+
+        [SerializeField]
+        private InputActionReference ShiftPressActionReference;
+        private InputAction _shiftPressedAction;
 
         /// <summary>
         /// 
         /// </summary>
         private void Awake()
         {
+            _selectableAgents = new HashSet<SelectableAgent>();
             _leftClickAction = LeftClickActionReference.action;
+            _shiftPressedAction = ShiftPressActionReference.action;
 
             LeftClickInScenePressed += ManageSceneSelections;
+
+            AllowMultiSelectionAgents = true;
         }
 
         /// <summary>
@@ -95,7 +119,7 @@ namespace ZukiniFun.TotalInputCore
         /// </summary>
         private void Update()
         {
-            SetHoverState();
+            SetSceneHoverState();
 
             if (_leftClickAction.WasPressedThisFrame())
             {
@@ -122,11 +146,11 @@ namespace ZukiniFun.TotalInputCore
         /// <summary>
         /// 
         /// </summary>
-        private void SetHoverState()
+        private void SetSceneHoverState()
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
-                SetHover(null);
+                SetCurrentHover(null);
                 return;
             }
 
@@ -134,11 +158,11 @@ namespace ZukiniFun.TotalInputCore
             if (Physics.Raycast(ray, out var hit, maxDistance, hoverMask, QueryTriggerInteraction.Ignore))
             {
                 var hoverable = hit.collider.GetComponentInParent<IHoverableTotalRecall>();
-                SetHover(hoverable);
+                SetCurrentHover(hoverable);
             }
             else
             {
-                SetHover(null);
+                SetCurrentHover(null);
             }
         }
 
@@ -146,9 +170,15 @@ namespace ZukiniFun.TotalInputCore
         /// 
         /// </summary>
         /// <param name="next"></param>
-        private void SetHover(IHoverableTotalRecall next)
+        private void SetCurrentHover(IHoverableTotalRecall next)
         {
             if (_currentHover == next)
+            {
+                return;
+            }
+
+            SelectableAgent agent = next as SelectableAgent;
+            if (agent != null && agent.IsSelectable())
             {
                 return;
             }
@@ -158,10 +188,111 @@ namespace ZukiniFun.TotalInputCore
             _currentHover?.OnHoverEnter();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void ManageSceneSelections()
         {
-            // Check if click-target is hovered, if so, add it to a hash set of collections.
+            if (_currentHover != null)
+            {
+                switch (_currentHover)
+                {
+                    case SelectableAgent agent:
+
+                        SetAgentsSelections(agent);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="agent"></param>
+        private void SetAgentsSelections(SelectableAgent agent)
+        {
+            if (agent.IsSelected())
+            {
+                RemoveSelection(agent);
+            }
+            else
+            {
+                AddSelection(agent);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="agent"></param>
+        private void RemoveSelection(SelectableAgent agent)
+        {
+            ManageAgentSelection(agent, false);
+            _currentHover = null;
+
+            if (AllowMultiSelectionAgents && !_shiftPressedAction.IsPressed())
+            {
+                RemoveOtherSelections();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="agent"></param>
+        private void AddSelection(SelectableAgent agent)
+        {
+            if (!_shiftPressedAction.IsPressed() || (!AllowMultiSelectionAgents && _selectableAgents.Count > 0))
+            {
+                RemoveOtherSelections();
+            }
+
+            if (_selectableAgents.Count > 0 && _shiftPressedAction.IsPressed())
+            {
+                if (AllowMultiSelectionAgents)
+                {
+                    ManageAgentSelection(agent, true);
+                }
+            }
+
+            if (_selectableAgents.Count == 0)
+            {
+                ManageAgentSelection(agent, true);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void RemoveOtherSelections()
+        {
+            _selectableAgents.ToList().ForEach(x =>
+            {
+                ManageAgentSelection(x, false);
+            });
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="set"></param>
+        /// <param name="agent"></param>
+        private void ManageAgentSelection(SelectableAgent agent, bool set)
+        {
+            if (set)
+            {
+                agent.SelectThisObject(true);
+                _selectableAgents.Add(agent);
+            }
+            else
+            {
+                agent.SelectThisObject(false);
+                _selectableAgents.Remove(agent);
+            }
         }
 
         #endregion
