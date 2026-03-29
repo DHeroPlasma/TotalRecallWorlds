@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -254,9 +255,14 @@ namespace ZukiniFun.TotalInputCore
         /// <summary>
         /// 
         /// </summary>
-        protected void SelectThisObject(bool set, SelectableObject selected = null)
+        protected void SelectThisObject(bool set, SelectableObject[] selected = null)
         {
-            if (selected != this || SelectionState.Equals(SelectionState.Blocked))
+            if (selected != null && !selected.Contains(this))
+            {
+                return;
+            }
+
+            if (SelectionState.Equals(SelectionState.Blocked))
             {
                 return;
             }

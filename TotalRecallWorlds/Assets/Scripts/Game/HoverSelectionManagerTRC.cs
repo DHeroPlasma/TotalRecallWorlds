@@ -44,7 +44,7 @@ namespace ZukiniFun.TotalGameCore
         /// <summary>
         /// 
         /// </summary>
-        public static UnityAction<bool, SelectableObject> AgentSelected;
+        public static UnityAction<bool, SelectableObject[]> AgentSelected;
 
         /// <summary>
         /// 
@@ -147,7 +147,7 @@ namespace ZukiniFun.TotalGameCore
                 {
                     case SelectableAgent agent:
 
-                        SetAgentsSelections(agent);
+                        SetAgentSelection(agent);
                         break;
 
                     default:
@@ -160,7 +160,7 @@ namespace ZukiniFun.TotalGameCore
         /// 
         /// </summary>
         /// <param name="agent"></param>
-        private void SetAgentsSelections(SelectableAgent agent)
+        private void SetAgentSelection(SelectableAgent agent)
         {
             if (agent.IsSelected())
             {
@@ -234,12 +234,12 @@ namespace ZukiniFun.TotalGameCore
         {
             if (set)
             {
-                AgentSelected.Invoke(true, agent);
+                AgentSelected.Invoke(true, new SelectableAgent[] { agent });
                 _selectedAgents.Add(agent);
             }
             else
             {
-                AgentSelected.Invoke(false, agent);
+                AgentSelected.Invoke(false, new SelectableAgent[] { agent });
                 _selectedAgents.Remove(agent);
             }
         }

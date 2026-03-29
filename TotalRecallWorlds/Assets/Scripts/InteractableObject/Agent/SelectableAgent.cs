@@ -35,11 +35,6 @@ namespace ZukiniFun.TotalAgentCore
         /// <summary>
         /// 
         /// </summary>
-        public UnityAction<SelectableAgent, SelectionState> AgentSelectionStateChanged;
-
-        /// <summary>
-        /// 
-        /// </summary>
         public UnityAction<LocomotionState> AgentLocomotionStateChanged;
 
         #region MonoBehavior Overrides
