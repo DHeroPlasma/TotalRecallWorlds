@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using ZukiniFun.TotalAgentHelpers;
+using ZukiniFun.TotalGameCore;
 using ZukiniFun.TotalInputCore;
 
 namespace ZukiniFun.TotalAgentCore
@@ -50,6 +51,18 @@ namespace ZukiniFun.TotalAgentCore
         {
             base.AwakeOverride();
             LocomotionState = LocomotionState.Idle;
+
+            HoverSelectionManagerTRC.AgentSelected += SelectThisObject;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected override void DestroyOverride()
+        {
+            HoverSelectionManagerTRC.AgentSelected -= SelectThisObject;
+
+            base.DestroyOverride();
         }
 
         #endregion
@@ -63,16 +76,6 @@ namespace ZukiniFun.TotalAgentCore
         public virtual void GoToDestination(Vector3 userDestinationInput)
         {
             ChangeLocomotionState(LocomotionState.GoingTo);
-        }
-
-        #endregion
-
-        #region IHoverableTotalRecall Override
-
-        protected override void ChangeObjectSelectionState(SelectionState newSelectionState)
-        {
-            base.ChangeObjectSelectionState(newSelectionState);
-            //AgentSelectionStateChanged.Invoke(this, newSelectionState);
         }
 
         #endregion

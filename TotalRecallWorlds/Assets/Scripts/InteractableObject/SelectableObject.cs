@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using ZukiniFun.TotalAgentCore;
+using ZukiniFun.TotalGameCore;
 using ZukiniFun.TotalInputCore;
 
 namespace ZukiniFun.TotalInputCore
@@ -18,7 +19,7 @@ namespace ZukiniFun.TotalInputCore
         public SelectionState SelectionState
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace ZukiniFun.TotalInputCore
         protected virtual void StartOverride()
         {
             _objectRenderers = GetComponentsInChildren<Renderer>();
-            OnHoverExit();
+            HoverExit();
         }
 
         /// <summary>
@@ -172,28 +173,28 @@ namespace ZukiniFun.TotalInputCore
         /// <summary>
         /// 
         /// </summary>
-        public void OnHoverEnter()
+        public void HoverEnter()
         {
             if (SelectionState.Equals(SelectionState.Selected) || _hoverCooldownActive)
             {
                 return;
             }
 
-            SetOutlineState(true);
+            SetLayerOutlineState(true, CollisionOutlineLayers.TotalRecallOutline);
             _isHovered = true;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public void OnHoverExit()
+        public void HoverExit()
         {
             if (SelectionState.Equals(SelectionState.Selected))
             {
                 return;
             }
 
-            SetOutlineState(false);
+            SetLayerOutlineState(false, CollisionOutlineLayers.None);
             _isHovered = false;
         }
 
@@ -233,17 +234,33 @@ namespace ZukiniFun.TotalInputCore
             _hoverCooldownActive = true;
             yield return new WaitForSeconds(HOVERCOOLDOWN);
             _hoverCooldownActive = false;
+
+            bool isHovered = InputManagerTRC.IsThisObjectHovered(this);
+            if (isHovered && !SelectionState.Equals(SelectionState.Blocked))
+            {
+                HoverEnter();
+            }
         }
 
         #endregion
 
         #region public namespace
 
+        #endregion
+
+        #region protected namespace
+
+
         /// <summary>
         /// 
         /// </summary>
-        public void SelectThisObject(bool set)
+        protected void SelectThisObject(bool set, SelectableObject selected = null)
         {
+            if (selected != this || SelectionState.Equals(SelectionState.Blocked))
+            {
+                return;
+            }
+
             if (!set)
             {
                 StartCoroutine(InvokeHoverCooldown());
@@ -252,22 +269,23 @@ namespace ZukiniFun.TotalInputCore
             PlayerSelectedObjectInternal.Invoke(set);
         }
 
-        #endregion
-
-        #region protected namespace
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="newSelectionState"></param>
-        protected virtual void ChangeObjectSelectionState(SelectionState newSelectionState)
+        /// <param name="active"></param>
+        protected void SetLayerOutlineState(bool set, CollisionOutlineLayers outlineLayer)
         {
-            if (newSelectionState.Equals(SelectionState.Unselected))
+            if (_objectRenderers == null || _objectRenderers.Length == 0 || SelectionState.Equals(SelectionState.Blocked))
             {
-                SetOutlineState(false);
+                return;
             }
 
-            SelectionState = newSelectionState;
+            foreach (var item in _objectRenderers)
+            {
+                item.gameObject.layer = set ?
+                    LayerMask.NameToLayer(outlineLayer.ToString()) : LayerMask.NameToLayer(CollisionOutlineLayers.TotalRecallHoverable.ToString());
+            }
         }
 
         #endregion
@@ -277,18 +295,15 @@ namespace ZukiniFun.TotalInputCore
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="active"></param>
-        private void SetOutlineState(bool set)
+        /// <param name="newSelectionState"></param>
+        private void ChangeObjectSelectionState(SelectionState newSelectionState)
         {
-            if (_objectRenderers == null || _objectRenderers.Length == 0)
+            if (newSelectionState.Equals(SelectionState.Unselected))
             {
-                return;
+                SetLayerOutlineState(false, CollisionOutlineLayers.None);
             }
 
-            foreach (var item in _objectRenderers)
-            {
-                item.gameObject.layer = set ? LayerMask.NameToLayer("TotalRecallOutline") : LayerMask.NameToLayer("TotalRecallHoverable");
-            }
+            SelectionState = newSelectionState;
         }
 
         #endregion

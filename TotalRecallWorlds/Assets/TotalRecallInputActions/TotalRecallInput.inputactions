@@ -7,17 +7,26 @@
             "actions": [
                 {
                     "name": "LeftClick",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "771ffc37-dc36-4bf9-9ae0-360a8cb88742",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
-                    "interactions": "Press(behavior=1)",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
                     "name": "ShiftPressed",
                     "type": "Button",
                     "id": "2889c6dd-408c-4cae-bcc7-4bc189c3200b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LeftDoubleClick",
+                    "type": "Button",
+                    "id": "38917a61-2a7a-4507-8661-ae158de135f3",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -29,7 +38,7 @@
                     "name": "",
                     "id": "679e4ed0-f3c2-4d25-a10c-5e5802afd2c6",
                     "path": "<Mouse>/leftButton",
-                    "interactions": "",
+                    "interactions": "MultiTap(tapCount=1)",
                     "processors": "",
                     "groups": ";PC",
                     "action": "LeftClick",
@@ -44,6 +53,17 @@
                     "processors": "",
                     "groups": ";PC",
                     "action": "ShiftPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "adeb40b1-4034-492b-99d3-b8e2a83c4da8",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "MultiTap",
+                    "processors": "",
+                    "groups": ";PC",
+                    "action": "LeftDoubleClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

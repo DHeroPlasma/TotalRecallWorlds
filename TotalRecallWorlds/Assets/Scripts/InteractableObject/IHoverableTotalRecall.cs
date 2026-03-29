@@ -8,7 +8,8 @@ namespace ZukiniFun.TotalInputCore
     public enum SelectionState
     {
         Unselected = 0,
-        Selected = 1
+        Selected = 1,
+        Blocked = 2
     }
 
     public interface IHoverableTotalRecall
@@ -16,12 +17,12 @@ namespace ZukiniFun.TotalInputCore
         /// <summary>
         /// 
         /// </summary>
-        public void OnHoverEnter();
+        public void HoverEnter();
 
         /// <summary>
         /// 
         /// </summary>
-        public void OnHoverExit();
+        public void HoverExit();
 
         /// <summary>
         /// 
