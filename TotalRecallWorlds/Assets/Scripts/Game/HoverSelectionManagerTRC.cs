@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -104,30 +105,31 @@ namespace ZukiniFun.TotalGameCore
         /// </summary>
         private void OnDoubleclickSetMainCharacter()
         {
-            if (_potentialMc != null)
+            if (_potentialMc == null)
             {
-                switch (_potentialMc)
-                {
-                    case SelectableMainCharacter mc:
+                return;
+            }
 
-                        if (_selectedMainCharacter == mc)
-                        {
-                            _selectedMainCharacter?.SetThisMainCharacter(false);
-                            _selectedMainCharacter = null;
-                            return;
-                        }
-                        else
-                        {
-                            _selectedMainCharacter?.SetThisMainCharacter(false);
-                            mc.SetThisMainCharacter(true);
-                            _selectedMainCharacter = mc;
-                        }
+            switch (_potentialMc)
+            {
+                case SelectableMainCharacter mc:
 
-                        break;
+                    if (_selectedMainCharacter == mc)
+                    {
+                        _selectedMainCharacter?.SetThisMainCharacter(false);
+                        _selectedMainCharacter = null;
+                        return;
+                    }
+                    else
+                    {
+                        _selectedMainCharacter?.SetThisMainCharacter(false);
+                        mc.SetThisMainCharacter(true);
+                        _selectedMainCharacter = mc;
+                    }
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
         }
 
@@ -136,23 +138,44 @@ namespace ZukiniFun.TotalGameCore
         /// </summary>
         private void OnClickManageSelection()
         {
-            if (_currentHover != null)
+            switch (_currentHover)
             {
-                if (_currentHover is SelectableMainCharacter mc && mc.IsMainCharacter)
-                {
-                    return;
-                }
+                case SelectableMainCharacter mc:
 
-                switch (_currentHover)
-                {
-                    case SelectableAgent agent:
+                    if (!mc.IsMainCharacter)
+                    {
+                        OnAgentSelection(mc);
+                    }
+                    break;
 
-                        AddOrRemoveAgentSelection(agent);
-                        break;
+                case SelectableAgent agent:
 
-                    default:
-                        break;
-                }
+                    OnAgentSelection(agent);
+                    break;
+
+                default:
+
+                    if (!InputManagerTRC.IsMultiSelectionPossible())
+                    {
+                        _selectedAgents.ToList().ForEach(x => InvokeSelectionForAgent(x, false));
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="agent"></param>
+        private void OnAgentSelection(SelectableAgent agent)
+        {
+            if (!InputManagerTRC.IsMultiSelectionPossible())
+            {
+                // Create Context Interaction Menu
+            }
+            else
+            {
+                AddOrRemoveAgentSelection(agent);
             }
         }
 
@@ -164,51 +187,9 @@ namespace ZukiniFun.TotalGameCore
         {
             if (agent.IsSelected())
             {
-                RemoveAgentSelection(agent);
+                InvokeSelectionForAgent(agent, false);
             }
             else
-            {
-                ManageAgentSelection(agent);
-            }
-        }
-
-        /// <summary>
-        /// De-select this agent and remove other selections aswell if the player doesn't have multiselection active.
-        /// </summary>
-        /// <param name="agent"></param>
-        private void RemoveAgentSelection(SelectableAgent agent)
-        {
-            InvokeSelectionForAgent(agent, false);
-
-            bool isMultiSelectionPossible = InputManagerTRC.IsMultiSelectionPossible();
-            if (AllowMultiSelectionAgents && !isMultiSelectionPossible)
-            {
-                _selectedAgents.ToList().ForEach(x => InvokeSelectionForAgent(x, false));
-            }
-        }
-
-        /// <summary>
-        /// Select agent when no other agent is selected or add this agent to agent collection while player activates multiselection.
-        /// If multiselection is not active, remove other selections.
-        /// </summary>
-        /// <param name="agent"></param>
-        private void ManageAgentSelection(SelectableAgent agent)
-        {
-            bool isMultiSelectionPossible = InputManagerTRC.IsMultiSelectionPossible();
-            if (!isMultiSelectionPossible || (!AllowMultiSelectionAgents && _selectedAgents.Count > 0))
-            {
-                _selectedAgents.ToList().ForEach(x => InvokeSelectionForAgent(x, false));
-            }
-
-            if (_selectedAgents.Count > 0 && isMultiSelectionPossible)
-            {
-                if (AllowMultiSelectionAgents)
-                {
-                    InvokeSelectionForAgent(agent, true);
-                }
-            }
-
-            if (_selectedAgents.Count == 0)
             {
                 InvokeSelectionForAgent(agent, true);
             }

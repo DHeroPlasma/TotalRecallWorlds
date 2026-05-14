@@ -62,6 +62,14 @@ namespace ZukiniFun.TotalInputCore
         public static UnityAction LeftDoubleClickInScenePressed;
 
         /// <summary>
+        /// Action reference interface for simple right clicks.
+        /// </summary>
+        [SerializeField]
+        private InputActionReference RightClickActionReference;
+        private InputAction _rightClickAction;
+        public static UnityAction RightClickInScenePressed;
+
+        /// <summary>
         /// Action reference interface for multi selection.
         /// </summary>
         [SerializeField]
@@ -76,6 +84,7 @@ namespace ZukiniFun.TotalInputCore
         {
             _leftClickAction = LeftClickActionReference.action;
             _leftDoubleClickAction = LeftDoubleClickActionReference.action;
+            _rightClickAction = RightClickActionReference.action;
             _shiftPressedAction = ShiftPressActionReference.action;
         }
 
@@ -129,6 +138,11 @@ namespace ZukiniFun.TotalInputCore
             if (_leftClickAction.WasPressedThisFrame())
             {
                 LeftClickInScenePressed.Invoke();
+            }
+
+            if (_rightClickAction.WasPressedThisFrame())
+            {
+                //RightClickInScenePressed.Invoke();
             }
 
             IsShiftPressedFlag = _shiftPressedAction.IsPressed();
@@ -238,6 +252,15 @@ namespace ZukiniFun.TotalInputCore
         public static bool IsThisObjectHovered(IHoverableTotalRecall check)
         {
             return _currentRaycastHit == check;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsAnyObjectHovered()
+        {
+            return _currentRaycastHit != null;
         }
 
         #endregion

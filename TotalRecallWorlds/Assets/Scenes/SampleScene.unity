@@ -81748,6 +81748,7 @@ MonoBehaviour:
   maxDistance: 500
   LeftClickActionReference: {fileID: 7521974808633924435, guid: d3ff8f7e2438f7746acac7c9723adec2, type: 3}
   LeftDoubleClickActionReference: {fileID: 2514306541681004550, guid: d3ff8f7e2438f7746acac7c9723adec2, type: 3}
+  RightClickActionReference: {fileID: 1823188605399634334, guid: d3ff8f7e2438f7746acac7c9723adec2, type: 3}
   ShiftPressActionReference: {fileID: 2920162398206669675, guid: d3ff8f7e2438f7746acac7c9723adec2, type: 3}
 --- !u!114 &2109815323
 MonoBehaviour:
