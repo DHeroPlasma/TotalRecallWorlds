@@ -5,9 +5,9 @@ using static UnityEngine.Rendering.DebugUI;
 
 namespace ZukiniFun.TotalAgentCore
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /*
+     * Overrides agent class to add main character functionalities like specific outline behavior.
+     */
     public class SelectableMainCharacter : SelectableAgent
     {
         private bool _isMainCharacter;

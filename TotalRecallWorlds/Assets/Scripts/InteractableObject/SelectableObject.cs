@@ -9,9 +9,9 @@ using ZukiniFun.TotalInputCore;
 
 namespace ZukiniFun.TotalInputCore
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /*
+     * Base class for all scene objects that can be selected by the user.
+     */
     public abstract class SelectableObject : MonoBehaviour, IHoverableTotalRecall
     {       
         /// <summary>
@@ -51,12 +51,6 @@ namespace ZukiniFun.TotalInputCore
         /// </summary>
         [SerializeField]
         private const float HOVERCOOLDOWN = 0.25f;
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected UnityAction<bool> PlayerSelectedObjectInternal;
 
         #region MonoBehavior
 
@@ -112,8 +106,7 @@ namespace ZukiniFun.TotalInputCore
         /// 
         /// </summary>
         protected virtual void AwakeOverride()
-        {
-            PlayerSelectedObjectInternal += OnObjectSelected;
+        {            
         }
 
         /// <summary>
@@ -137,7 +130,6 @@ namespace ZukiniFun.TotalInputCore
         /// </summary>
         protected virtual void DestroyOverride()
         {
-            PlayerSelectedObjectInternal -= OnObjectSelected;
         }
 
         /// <summary>
@@ -152,19 +144,6 @@ namespace ZukiniFun.TotalInputCore
         /// </summary>
         protected virtual void DisableOverride()
         {
-        }
-
-        #endregion
-
-        #region Event Callbacks
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="selected"></param>
-        protected virtual void OnObjectSelected(bool selected)
-        {
-            ChangeObjectSelectionState(selected ? SelectionState.Selected : SelectionState.Unselected);
         }
 
         #endregion
@@ -245,12 +224,7 @@ namespace ZukiniFun.TotalInputCore
 
         #endregion
 
-        #region public namespace
-
-        #endregion
-
         #region protected namespace
-
 
         /// <summary>
         /// 
@@ -272,7 +246,7 @@ namespace ZukiniFun.TotalInputCore
                 StartCoroutine(InvokeHoverCooldown());
             }
 
-            PlayerSelectedObjectInternal.Invoke(set);
+            ChangeObjectSelectionState(set ? SelectionState.Selected : SelectionState.Unselected);
         }
 
 

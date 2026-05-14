@@ -9,23 +9,23 @@ using ZukiniFun.TotalAgentCore;
 
 namespace ZukiniFun.TotalInputCore
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /*
+     * Use this class to create interfaces to action map events.
+     */
     public class InputManagerTRC : MonoBehaviour
     {
         /// <summary>
-        /// 
+        /// Link to the project's action asset.
         /// </summary>
         public InputActionAsset InputActions;
 
         /// <summary>
-        /// 
+        /// Link to a specific action map.
         /// </summary>
         private InputActionMap _inputActionMap;
 
         /// <summary>
-        /// 
+        /// Link to the main camera for player-centric raycasting.
         /// </summary>
         [SerializeField]
         private Camera _mainCam;
@@ -35,19 +35,18 @@ namespace ZukiniFun.TotalInputCore
         private float maxDistance = 500f;
 
         /// <summary>
-        /// 
+        /// Stores the currently intersected agent or object from the player's point of view.
         /// </summary>
         private static IHoverableTotalRecall _currentRaycastHit;
         public static UnityAction<IHoverableTotalRecall> MouseRaycastChanged;
 
         /// <summary>
-        /// 
+        /// Reference for doubleclick target comparison.
         /// </summary>
         private IHoverableTotalRecall _firstKlickObject;
-        private IHoverableTotalRecall _secondKlickObject;
 
         /// <summary>
-        /// 
+        /// Action reference interface for simple left clicks.
         /// </summary>
         [SerializeField]
         private InputActionReference LeftClickActionReference;
@@ -55,7 +54,7 @@ namespace ZukiniFun.TotalInputCore
         public static UnityAction LeftClickInScenePressed;
 
         /// <summary>
-        /// 
+        /// Action reference interface for double left clicks.
         /// </summary>
         [SerializeField]
         private InputActionReference LeftDoubleClickActionReference;
@@ -63,7 +62,7 @@ namespace ZukiniFun.TotalInputCore
         public static UnityAction LeftDoubleClickInScenePressed;
 
         /// <summary>
-        /// 
+        /// Action reference interface for multi selection.
         /// </summary>
         [SerializeField]
         private InputActionReference ShiftPressActionReference;
@@ -165,7 +164,7 @@ namespace ZukiniFun.TotalInputCore
         #region private namespace
 
         /// <summary>
-        /// 
+        /// Store the clicked object for comparison.
         /// </summary>
         /// <param name="context"></param>
         private void FirstClick(InputAction.CallbackContext context)
@@ -180,7 +179,7 @@ namespace ZukiniFun.TotalInputCore
         }
 
         /// <summary>
-        /// 
+        /// Event is only invoked if the first click hit the same object as the second one.
         /// </summary>
         /// <param name="context"></param>
         private void SecondClick(InputAction.CallbackContext context)
@@ -197,7 +196,7 @@ namespace ZukiniFun.TotalInputCore
         }
 
         /// <summary>
-        /// 
+        /// Detect which object is intersected by the ray sent from the players pov mouse position and pass it to the link event.
         /// </summary>
         private void SetSceneHoverState()
         {
@@ -232,7 +231,7 @@ namespace ZukiniFun.TotalInputCore
         #region public namespace
 
         /// <summary>
-        /// 
+        /// Check whether this object is currently intersected by the raycast sent from the player's pov mouse position.
         /// </summary>
         /// <param name="check"></param>
         /// <returns></returns>

@@ -9,9 +9,9 @@ using ZukiniFun.TotalInputCore;
 
 namespace ZukiniFun.TotalAgentCore
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /*
+     * Overrides base class to add locomotion functionalities.
+     */
     public abstract class SelectableAgent : SelectableObject, ISelectableAgentLocomotion
     { 
         /// <summary>

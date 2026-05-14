@@ -7,9 +7,9 @@ using ZukiniFun.TotalInputCore;
 
 namespace ZukiniFun.TotalGameCore
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /*
+     * This class is supposed to manage, store and provide links to agent and object selection by the player.
+     */
     public class HoverSelectionManagerTRC : MonoBehaviour
     {
         /// <summary>
@@ -27,7 +27,7 @@ namespace ZukiniFun.TotalGameCore
         private IHoverableTotalRecall _currentHover;
 
         /// <summary>
-        /// 
+        /// Store the currently hovered object to qualify it for eventual main character selection user input.
         /// </summary>
         private IHoverableTotalRecall _potentialMc;
 
@@ -42,7 +42,7 @@ namespace ZukiniFun.TotalGameCore
         private SelectableMainCharacter _selectedMainCharacter;
 
         /// <summary>
-        /// 
+        /// Static link for other classes to react to agent selection.
         /// </summary>
         public static UnityAction<bool, SelectableObject[]> AgentSelected;
 
@@ -60,9 +60,9 @@ namespace ZukiniFun.TotalGameCore
         /// </summary>
         private void OnEnable()
         {
-            InputManagerTRC.MouseRaycastChanged += SetCurrentHover;
-            InputManagerTRC.LeftClickInScenePressed += ManageSceneSelections;
-            InputManagerTRC.LeftDoubleClickInScenePressed += SetMainCharacter;
+            InputManagerTRC.MouseRaycastChanged += OnMouseHoverSetCurrentHover;
+            InputManagerTRC.LeftClickInScenePressed += OnClickManageSelection;
+            InputManagerTRC.LeftDoubleClickInScenePressed += OnDoubleclickSetMainCharacter;
         }
 
         /// <summary>
@@ -70,16 +70,16 @@ namespace ZukiniFun.TotalGameCore
         /// </summary>
         private void OnDisable()
         {
-            InputManagerTRC.MouseRaycastChanged -= SetCurrentHover;
-            InputManagerTRC.LeftClickInScenePressed -= ManageSceneSelections;
-            InputManagerTRC.LeftDoubleClickInScenePressed -= SetMainCharacter;
+            InputManagerTRC.MouseRaycastChanged -= OnMouseHoverSetCurrentHover;
+            InputManagerTRC.LeftClickInScenePressed -= OnClickManageSelection;
+            InputManagerTRC.LeftDoubleClickInScenePressed -= OnDoubleclickSetMainCharacter;
         }
 
         /// <summary>
-        /// Das hier muss aufs RayCast-Event von InputManager hören.
+        /// React to player mouse navigation to highlight currently hovered objects.
         /// </summary>
         /// <param name="next"></param>
-        private void SetCurrentHover(IHoverableTotalRecall next)
+        private void OnMouseHoverSetCurrentHover(IHoverableTotalRecall next)
         {
             _potentialMc = next;
 
@@ -100,9 +100,9 @@ namespace ZukiniFun.TotalGameCore
         }
 
         /// <summary>
-        /// 
+        /// React to player input for setting the main character.
         /// </summary>
-        private void SetMainCharacter()
+        private void OnDoubleclickSetMainCharacter()
         {
             if (_potentialMc != null)
             {
@@ -132,9 +132,9 @@ namespace ZukiniFun.TotalGameCore
         }
 
         /// <summary>
-        /// 
+        /// React to player input for objet selection in the scene.
         /// </summary>
-        private void ManageSceneSelections()
+        private void OnClickManageSelection()
         {
             if (_currentHover != null)
             {
@@ -147,7 +147,7 @@ namespace ZukiniFun.TotalGameCore
                 {
                     case SelectableAgent agent:
 
-                        SetAgentSelection(agent);
+                        AddOrRemoveAgentSelection(agent);
                         break;
 
                     default:
@@ -157,80 +157,69 @@ namespace ZukiniFun.TotalGameCore
         }
 
         /// <summary>
-        /// 
+        /// Invoke the selection logic depending on whether this agent is already selected or not.
         /// </summary>
         /// <param name="agent"></param>
-        private void SetAgentSelection(SelectableAgent agent)
+        private void AddOrRemoveAgentSelection(SelectableAgent agent)
         {
             if (agent.IsSelected())
             {
-                RemoveSelection(agent);
+                RemoveAgentSelection(agent);
             }
             else
             {
-                AddSelection(agent);
+                ManageAgentSelection(agent);
             }
         }
 
         /// <summary>
-        /// 
+        /// De-select this agent and remove other selections aswell if the player doesn't have multiselection active.
         /// </summary>
         /// <param name="agent"></param>
-        private void RemoveSelection(SelectableAgent agent)
+        private void RemoveAgentSelection(SelectableAgent agent)
         {
-            ManageAgentSelection(agent, false);
+            InvokeSelectionForAgent(agent, false);
 
             bool isMultiSelectionPossible = InputManagerTRC.IsMultiSelectionPossible();
             if (AllowMultiSelectionAgents && !isMultiSelectionPossible)
             {
-                RemoveOtherSelections();
+                _selectedAgents.ToList().ForEach(x => InvokeSelectionForAgent(x, false));
             }
         }
 
         /// <summary>
-        /// 
+        /// Select agent when no other agent is selected or add this agent to agent collection while player activates multiselection.
+        /// If multiselection is not active, remove other selections.
         /// </summary>
         /// <param name="agent"></param>
-        private void AddSelection(SelectableAgent agent)
+        private void ManageAgentSelection(SelectableAgent agent)
         {
             bool isMultiSelectionPossible = InputManagerTRC.IsMultiSelectionPossible();
             if (!isMultiSelectionPossible || (!AllowMultiSelectionAgents && _selectedAgents.Count > 0))
             {
-                RemoveOtherSelections();
+                _selectedAgents.ToList().ForEach(x => InvokeSelectionForAgent(x, false));
             }
 
             if (_selectedAgents.Count > 0 && isMultiSelectionPossible)
             {
                 if (AllowMultiSelectionAgents)
                 {
-                    ManageAgentSelection(agent, true);
+                    InvokeSelectionForAgent(agent, true);
                 }
             }
 
             if (_selectedAgents.Count == 0)
             {
-                ManageAgentSelection(agent, true);
+                InvokeSelectionForAgent(agent, true);
             }
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        private void RemoveOtherSelections()
-        {
-            _selectedAgents.ToList().ForEach(x =>
-            {
-                ManageAgentSelection(x, false);
-            });
-        }
-
-
-        /// <summary>
-        /// 
+        /// Invokes the agent selection routine for the passed instance and adds it to the collection of selected agents.
         /// </summary>
         /// <param name="set"></param>
         /// <param name="agent"></param>
-        private void ManageAgentSelection(SelectableAgent agent, bool set)
+        private void InvokeSelectionForAgent(SelectableAgent agent, bool set)
         {
             if (set)
             {
